@@ -5,6 +5,7 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
+import { typeDefs, resolvers } from './resolvers'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'shards-ui/dist/css/shards.min.css'
@@ -13,14 +14,21 @@ import App from './components/App'
 import LoginForm from './components/LoginForm'
 
 const cache = new InMemoryCache()
-const link = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
+cache.writeData({
+  data: {
+    isLoggedIn: !!localStorage.getItem('token'),
+  },
 })
 
 const client = new ApolloClient({
-  dataIdFromObject: o => o.id,
   cache,
-  link,
+  dataIdFromObject: o => o.id,
+  link: new HttpLink({
+    uri: 'http://localhost:4000/graphql',
+    headers: { authorization: localStorage.getItem('token') },
+  }),
+  resolvers,
+  typeDefs,
 })
 
 const Root = () => {
@@ -28,7 +36,7 @@ const Root = () => {
     <ApolloProvider client={client}>
       <Router history={hashHistory}>
         <Route path="/" component={App}>
-          <Route path="login">{<Redirect to="/foo" />}</Route>
+          <Route path="login" component={LoginForm}></Route>
         </Route>
       </Router>
     </ApolloProvider>

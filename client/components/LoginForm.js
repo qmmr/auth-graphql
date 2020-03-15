@@ -1,45 +1,69 @@
 import React, { useState } from 'react'
 import { useApolloClient, useMutation } from '@apollo/react-hooks'
-import { Button, Form, FormInput, FormGroup } from 'shards-react'
+import { Alert, Button, Form, FormInput, FormGroup } from 'shards-react'
 import LOGIN from '../mutations/Login'
-import CURRENT_USER_QUERY from '../queries/CurrentUser'
 
-const LoginForm = props => {
+const LoginForm = ({ router }) => {
+  // console.log('LoginForm:: ', props)
+  const client = useApolloClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [login, { loading, error }] = useMutation(LOGIN, {
+  const [login, resp] = useMutation(LOGIN, {
     variables: { email, password },
     onCompleted: props => {
-      console.log('onCompleted: ', props)
+      console.log('LOGIN::onCompleted: ', props)
+      localStorage.setItem('token', props.login.id)
+      client.writeData({ data: { isLoggedIn: true } })
+      router.push('/')
     },
-    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+    onError: ({ graphQLErrors }) => {
+      const errors = graphQLErrors.map(e => e.message)
+      console.log(errors)
+    },
   })
 
   const onEmailChange = ({ target: { value } }) => setEmail(value)
   const onPasswordChange = ({ target: { value } }) => setPassword(value)
   const handleSubmit = evt => {
     evt.preventDefault()
-    console.log('submitting form...', loading, error)
     login()
   }
+  const hasErrors = resp && resp.error && Array.isArray(resp.error.graphQLErrors)
 
   return (
     <Form onSubmit={handleSubmit}>
       <FormGroup>
         <label htmlFor="email">Email:</label>
-        <FormInput id="email" placeholder="Enter your email..." value={email} onChange={onEmailChange} />
+        <FormInput
+          id="email"
+          invalid={hasErrors}
+          onChange={onEmailChange}
+          placeholder="Enter your email..."
+          type="email"
+          value={email}
+        />
       </FormGroup>
       <FormGroup>
         <label htmlFor="password">Password</label>
         <FormInput
-          type="password"
           id="password"
-          placeholder="Enter your password..."
-          value={password}
+          invalid={hasErrors}
           onChange={onPasswordChange}
+          placeholder="Enter your password..."
+          type="password"
+          value={password}
         />
       </FormGroup>
-      <Button type="submit">Login</Button>
+      {hasErrors
+        ? resp.error.graphQLErrors.map(({ message }) => (
+            <Alert theme="danger" key={message}>
+              {message}
+            </Alert>
+          ))
+        : null}
+      <FormGroup>
+        <Button type="submit">Login</Button>
+      </FormGroup>
     </Form>
   )
 }
