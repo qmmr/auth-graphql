@@ -32,13 +32,14 @@ const LoginForm = ({ router }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
+      <h1>Login</h1>
       <FormGroup>
         <label htmlFor="email">Email:</label>
         <FormInput
           id="email"
           invalid={hasErrors}
           onChange={onEmailChange}
-          placeholder="Enter your email..."
+          placeholder="joe@gmail.com"
           type="email"
           value={email}
         />

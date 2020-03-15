@@ -8,30 +8,40 @@ import IS_LOGGED_IN from '../queries/IsLoggedIn'
 import LOGOUT from '../mutations/Logout'
 
 function LogoutLink(props) {
+  const router = props.router
   const client = useApolloClient()
   const [logout, data] = useMutation(LOGOUT, {
     onCompleted: props => {
       console.log('logout is complete:: ', props)
+      localStorage.removeItem('token')
       client.writeData({ data: { isLoggedIn: false } })
+      console.log('router:: ', router)
+      // TODO: Redirect only when location is different that /
+      router.push('/')
     },
   })
-  console.log('LogoutLink:: ', props, data)
+  const handleLogout = evt => {
+    evt.preventDefault()
+    logout()
+  }
+
+  // console.log('LogoutLink:: ', props, data)
 
   return (
     <NavItem>
-      <Link to="#" className="nav-link" onClick={logout}>
+      <Link to="#" className="nav-link" onClick={handleLogout}>
         Logout
       </Link>
     </NavItem>
   )
 }
 
-function IsLoggedIn({ logout }) {
+function IsLoggedIn({ router }) {
   const { data } = useQuery(IS_LOGGED_IN)
   console.log('isLoggedIn:: ', data)
 
   return data.isLoggedIn ? (
-    <LogoutLink />
+    <LogoutLink router={router} />
   ) : (
     <Fragment>
       <NavItem>
@@ -48,13 +58,13 @@ function IsLoggedIn({ logout }) {
   )
 }
 
-const Header = ({ children }) => {
+const Header = ({ children, router }) => {
   return (
     <header>
       <Navbar type="dark" theme="primary" expand="md">
         <NavbarBrand href="#">Auth with GraphQL</NavbarBrand>
         <Nav navbar className="ml-auto">
-          <IsLoggedIn />
+          <IsLoggedIn router={router} />
         </Nav>
       </Navbar>
       {children}

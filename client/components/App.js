@@ -4,7 +4,7 @@ import Header from './Header'
 
 const App = props => (
   <Container className="dr-example-container" fluid>
-    <Header />
+    <Header router={props.router} />
     <Row>
       <Col sm="12" md="4" lg="3"></Col>
       <Col sm="12" md="4" lg="6">
