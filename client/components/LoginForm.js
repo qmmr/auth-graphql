@@ -39,7 +39,7 @@ const LoginForm = ({ router }) => {
           id="email"
           invalid={hasErrors}
           onChange={onEmailChange}
-          placeholder="joe@gmail.com"
+          placeholder="joe@example.com"
           type="email"
           value={email}
         />

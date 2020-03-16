@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 import { Link } from 'react-router'
 import { useApolloClient, useQuery, useMutation } from '@apollo/react-hooks'
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'shards-react'
+import { Box, Text } from 'rebass'
 
 import CURRENT_USER_QUERY from '../queries/CurrentUser'
 import IS_LOGGED_IN from '../queries/IsLoggedIn'
@@ -60,15 +61,15 @@ function IsLoggedIn({ router }) {
 
 const Header = ({ children, router }) => {
   return (
-    <header>
+    <Box as="header" width={[1, 1, 1, 1]}>
       <Navbar type="dark" theme="primary" expand="md">
-        <NavbarBrand href="#">Auth with GraphQL</NavbarBrand>
+        <Text>Auth with GraphQL</Text>
         <Nav navbar className="ml-auto">
           <IsLoggedIn router={router} />
         </Nav>
       </Navbar>
       {children}
-    </header>
+    </Box>
   )
 }
 

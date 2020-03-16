@@ -9,7 +9,7 @@ import { HttpLink } from 'apollo-link-http'
 import { typeDefs, resolvers } from './resolvers'
 
 import { ThemeProvider } from 'emotion-theming'
-import theme from '@rebass/preset'
+import preset from '@rebass/preset'
 
 // FIXME: Remove along with ract-shards
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -40,7 +40,7 @@ const client = new ApolloClient({
 const Root = () => {
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={preset}>
         <Router history={hashHistory}>
           <Route path="/" component={App}>
             <Route path="login" component={LoginForm}></Route>
