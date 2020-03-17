@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useApolloClient, useMutation } from '@apollo/react-hooks'
-import { Box, Button } from 'rebass'
+import { Box, Button, Text } from 'rebass'
 import { Label, Input, Select, Textarea, Radio, Checkbox } from '@rebass/forms'
 import SIGNUP from '../mutations/Signup'
 
@@ -8,12 +8,14 @@ const SignupForm = props => {
   const router = props.router
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState([])
   const [signup, data] = useMutation(SIGNUP, {
     variables: { email, password },
     onCompleted: ({ signup }) => {
       console.log('Signup completed:: ', signup)
       router.push('/login')
     },
+    onError: ({ graphQLErrors }) => setErrors(graphQLErrors.map(e => e.message)),
   })
 
   const onEmailChange = ({ target: { value } }) => setEmail(value)
@@ -27,7 +29,7 @@ const SignupForm = props => {
     <Box as="form" py={3} onSubmit={onSubmit}>
       <h1>Signup</h1>
       <Label htmlFor="email">email</Label>
-      <Input type="email" id="email" placeholder="jane@example.com" value={email} onChange={onEmailChange} />
+      <Input type="email" id="email" placeholder="joe@gmail.com" value={email} onChange={onEmailChange} />
       <Label htmlFor="password">password</Label>
       <Input
         type="password"
@@ -36,6 +38,13 @@ const SignupForm = props => {
         value={password}
         onChange={onPasswordChange}
       />
+      {errors.length
+        ? errors.map(msg => (
+            <Text color="red" key={msg}>
+              {msg}
+            </Text>
+          ))
+        : null}
       <Button type="submit">Signup</Button>
     </Box>
   )

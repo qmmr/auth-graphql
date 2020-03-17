@@ -22,7 +22,7 @@ mongoose.Promise = global.Promise
 // on success or failure
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(
-  () => console.log('Connected to Atlas instance.'),
+  () => console.log('Connected to local mongodb instance.'),
   error => console.error('Error connecting to Atlas:', error)
 )
 

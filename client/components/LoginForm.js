@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Alert, Button, Form, FormInput, FormGroup } from 'shards-react'
+import { Text } from 'rebass'
 import LOGIN from '../mutations/Login'
 
 const LoginForm = ({ router }) => {
@@ -8,6 +9,7 @@ const LoginForm = ({ router }) => {
   const client = useApolloClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState([])
   const [login, resp] = useMutation(LOGIN, {
     variables: { email, password },
     onCompleted: props => {
@@ -16,10 +18,7 @@ const LoginForm = ({ router }) => {
       client.writeData({ data: { isLoggedIn: true } })
       router.push('/')
     },
-    onError: ({ graphQLErrors }) => {
-      const errors = graphQLErrors.map(e => e.message)
-      console.log(errors)
-    },
+    onError: ({ graphQLErrors }) => setErrors(graphQLErrors.map(e => e.message)),
   })
 
   const onEmailChange = ({ target: { value } }) => setEmail(value)
@@ -28,7 +27,6 @@ const LoginForm = ({ router }) => {
     evt.preventDefault()
     login()
   }
-  const hasErrors = resp && resp.error && Array.isArray(resp.error.graphQLErrors)
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -37,7 +35,7 @@ const LoginForm = ({ router }) => {
         <label htmlFor="email">Email:</label>
         <FormInput
           id="email"
-          invalid={hasErrors}
+          invalid={!!errors.length}
           onChange={onEmailChange}
           placeholder="joe@example.com"
           type="email"
@@ -48,18 +46,18 @@ const LoginForm = ({ router }) => {
         <label htmlFor="password">Password</label>
         <FormInput
           id="password"
-          invalid={hasErrors}
+          invalid={!!errors.length}
           onChange={onPasswordChange}
           placeholder="Enter your password..."
           type="password"
           value={password}
         />
       </FormGroup>
-      {hasErrors
+      {errors.length
         ? resp.error.graphQLErrors.map(({ message }) => (
-            <Alert theme="danger" key={message}>
+            <Text color="red" key={message}>
               {message}
-            </Alert>
+            </Text>
           ))
         : null}
       <FormGroup>
