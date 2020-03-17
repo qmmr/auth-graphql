@@ -17,16 +17,15 @@ function LogoutLink(props) {
       localStorage.removeItem('token')
       client.writeData({ data: { isLoggedIn: false } })
       console.log('router:: ', router)
-      // TODO: Redirect only when location is different that /
-      router.push('/')
+      router.push('/login')
     },
+    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+    awaitRefetchQueries: true,
   })
   const handleLogout = evt => {
     evt.preventDefault()
     logout()
   }
-
-  // console.log('LogoutLink:: ', props, data)
 
   return (
     <NavItem>
@@ -37,7 +36,9 @@ function LogoutLink(props) {
   )
 }
 
-function IsLoggedIn({ router }) {
+const WelcomeUser = ({ user }) => <Text>Welcome back, {user.email}!</Text>
+
+const IsLoggedIn = ({ router }) => {
   const { data } = useQuery(IS_LOGGED_IN)
   console.log('isLoggedIn:: ', data)
 
@@ -60,10 +61,15 @@ function IsLoggedIn({ router }) {
 }
 
 const Header = ({ children, router }) => {
+  const { data } = useQuery(CURRENT_USER_QUERY, {
+    fetchPolicy: 'network-only',
+  })
+
   return (
     <Box as="header" width={[1, 1, 1, 1]}>
       <Navbar type="dark" theme="primary" expand="md">
         <Text>Auth with GraphQL</Text>
+        {data && data.user ? <WelcomeUser user={data.user} /> : null}
         <Nav navbar className="ml-auto">
           <IsLoggedIn router={router} />
         </Nav>

@@ -3,21 +3,23 @@ import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Alert, Button, Form, FormInput, FormGroup } from 'shards-react'
 import { Text } from 'rebass'
 import LOGIN from '../mutations/Login'
+import CURRENT_USER_QUERY from '../queries/CurrentUser'
 
 const LoginForm = ({ router }) => {
-  // console.log('LoginForm:: ', props)
   const client = useApolloClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState([])
   const [login, resp] = useMutation(LOGIN, {
     variables: { email, password },
-    onCompleted: props => {
-      console.log('LOGIN::onCompleted: ', props)
-      localStorage.setItem('token', props.login.id)
+    onCompleted: ({ login }) => {
+      console.log('LOGIN::onCompleted: ', login)
+      localStorage.setItem('token', login.id)
       client.writeData({ data: { isLoggedIn: true } })
       router.push('/')
     },
+    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+    awaitRefetchQueries: true,
     onError: ({ graphQLErrors }) => setErrors(graphQLErrors.map(e => e.message)),
   })
 
