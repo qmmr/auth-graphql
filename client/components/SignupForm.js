@@ -4,8 +4,7 @@ import { Box, Button, Text } from 'rebass'
 import { Label, Input, Select, Textarea, Radio, Checkbox } from '@rebass/forms'
 import SIGNUP from '../mutations/Signup'
 
-const SignupForm = props => {
-  const router = props.router
+const SignupForm = ({ router }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState([])

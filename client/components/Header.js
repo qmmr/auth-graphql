@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Link } from 'react-router'
+import { hashHistory, Link } from 'react-router'
 import { useApolloClient, useQuery, useMutation } from '@apollo/react-hooks'
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'shards-react'
 import { Box, Text } from 'rebass'
@@ -8,16 +8,14 @@ import CURRENT_USER_QUERY from '../queries/CurrentUser'
 import IS_LOGGED_IN from '../queries/IsLoggedIn'
 import LOGOUT from '../mutations/Logout'
 
-function LogoutLink(props) {
-  const router = props.router
+const LogoutLink = () => {
   const client = useApolloClient()
   const [logout, data] = useMutation(LOGOUT, {
     onCompleted: props => {
       console.log('logout is complete:: ', props)
       localStorage.removeItem('token')
       client.writeData({ data: { isLoggedIn: false } })
-      console.log('router:: ', router)
-      router.push('/login')
+      hashHistory.push('/login')
     },
     refetchQueries: [{ query: CURRENT_USER_QUERY }],
     awaitRefetchQueries: true,
@@ -38,12 +36,12 @@ function LogoutLink(props) {
 
 const WelcomeUser = ({ user }) => <Text>Welcome back, {user.email}!</Text>
 
-const IsLoggedIn = ({ router }) => {
+const IsLoggedIn = () => {
   const { data } = useQuery(IS_LOGGED_IN)
   console.log('isLoggedIn:: ', data)
 
   return data.isLoggedIn ? (
-    <LogoutLink router={router} />
+    <LogoutLink />
   ) : (
     <Fragment>
       <NavItem>
@@ -60,7 +58,7 @@ const IsLoggedIn = ({ router }) => {
   )
 }
 
-const Header = ({ children, router }) => {
+const Header = ({ children }) => {
   const { data } = useQuery(CURRENT_USER_QUERY, {
     fetchPolicy: 'network-only',
   })
@@ -71,7 +69,7 @@ const Header = ({ children, router }) => {
         <Text>Auth with GraphQL</Text>
         {data && data.user ? <WelcomeUser user={data.user} /> : null}
         <Nav navbar className="ml-auto">
-          <IsLoggedIn router={router} />
+          <IsLoggedIn />
         </Nav>
       </Navbar>
       {children}

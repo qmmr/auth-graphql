@@ -5,7 +5,7 @@ import Header from './Header'
 const App = props => {
   return (
     <Flex px={2} alignItems="center" width="100%" flexDirection="column">
-      <Header router={props.router} />
+      <Header />
       <Box width={[1, 1, 1]} p={3}>
         {props.children}
       </Box>
