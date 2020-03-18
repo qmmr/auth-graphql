@@ -28,11 +28,12 @@ const SignupForm = ({ router }) => {
     <Box as="form" py={3} onSubmit={onSubmit}>
       <h1>Signup</h1>
       <Label htmlFor="email">email</Label>
-      <Input type="email" id="email" placeholder="joe@gmail.com" value={email} onChange={onEmailChange} />
+      <Input type="email" id="email" name="email" placeholder="joe@gmail.com" value={email} onChange={onEmailChange} />
       <Label htmlFor="password">password</Label>
       <Input
         type="password"
         id="password"
+        name="password"
         placeholder="Enter your password"
         value={password}
         onChange={onPasswordChange}

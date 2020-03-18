@@ -38,6 +38,7 @@ const LoginForm = ({ router }) => {
         <FormInput
           id="email"
           invalid={!!errors.length}
+          name="email"
           onChange={onEmailChange}
           placeholder="joe@example.com"
           type="email"
@@ -49,6 +50,7 @@ const LoginForm = ({ router }) => {
         <FormInput
           id="password"
           invalid={!!errors.length}
+          name="password"
           onChange={onPasswordChange}
           placeholder="Enter your password..."
           type="password"
